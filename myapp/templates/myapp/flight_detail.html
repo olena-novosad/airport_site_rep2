@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Detail</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        table td {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        table td:last-child {
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-red {
+            background-color: #e63946;
+        }
+
+        .btn-red:hover {
+            background-color: #c53030;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-ticket {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .add-ticket button {
+            background-color: #28a745;
+            color: #ffffff;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-ticket button:hover {
+            background-color: #218838;
+        }
+
+        a.back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-tickets {
+            text-align: center;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flight Details</h1>
+        <table>
+            <tr>
+                <th>Field</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Number</td>
+                <td>{{ flight.number }}</td>
+            </tr>
+            <tr>
+                <td>Departure Time</td>
+                <td>{{ flight.departure_time }}</td>
+            </tr>
+            <tr>
+                <td>Arrival Time</td>
+                <td>{{ flight.arrival_time }}</td>
+            </tr>
+            <tr>
+                <td>Boarding Time</td>
+                <td>{{ flight.boarding_time }}</td>
+            </tr>
+            <tr>
+                <td>Destination</td>
+                <td>{{ flight.destination }}</td>
+            </tr>
+            <tr>
+                <td>Airline</td>
+                <td>{{ flight.airline.name }}</td>
+            </tr>
+            <tr>
+                <td>Gate</td>
+                <td>{{ flight.gate.number }}</td>
+            </tr>
+            <tr>
+                <td>Check-In Counter</td>
+                <td>{{ flight.check_in_counter.number }}</td>
+            </tr>
+        </table>
+
+        <h2>Tickets</h2>
+        <div class="btn-group">
+            <form action="" method="get">
+                <input type="hidden" name="order" value="asc">
+                <button type="submit" class="btn">Sort by Price (Ascending)</button>
+            </form>
+            <form action="" method="get">
+                <input type="hidden" name="order" value="desc">
+                <button type="submit" class="btn">Sort by Price (Descending)</button>
+            </form>
+            <form action="" method="get">
+                <button type="submit" class="btn">Default Order</button>
+            </form>
+        </div>
+
+        {% if tickets %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket Number</th>
+                    <th>Seat Number</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.number }}</td>
+                    <td>{{ ticket.seat_number }}</td>
+                    <td>{{ ticket.price }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <form action="{% url 'edit_ticket' ticket.id %}" method="get" style="display:inline;">
+                            <button type="submit" class="btn">Edit</button>
+                        </form>
+                        {% endif %}
+                        <form action="{% url 'buy_ticket' ticket.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-red">Buy</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-tickets">No tickets available for this flight.</p>
+        {% endif %}
+
+        {% if user.is_superuser %}
+        <div class="add-ticket">
+            <form action="{% url 'add_ticket' flight.id %}" method="get">
+                <button type="submit">Add New Ticket</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'flight_list' %}" class="back-link">Back to Flight List</a>
+    </div>
+</body>
+</html>

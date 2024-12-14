@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <title>Airport Main Page</title>
+    <style>
+        /* Загальні стилі */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        h1, h2 {
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+        h2 {
+            font-size: 1.8em;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        /* Стилі кнопок */
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn.secondary {
+            background-color: #28a745;
+        }
+        .btn.secondary:hover {
+            background-color: #218838;
+        }
+        .btn.logout {
+            background-color: #dc3545;
+        }
+        .btn.logout:hover {
+            background-color: #c82333;
+        }
+
+        /* Стилі для карти */
+        #map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+        #map {
+            width: 80%; /* Змінено ширину для адаптації */
+            max-width: 800px;
+            height: 400px; /* Висота карти */
+            border: 2px solid #ccc;
+            border-radius: 10px;
+        }
+
+        /* Футер */
+        footer {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Welcome to {{ airport_name }}</h1>
+    <p>Your gateway to the world</p>
+</header>
+
+<div class="container">
+    <h2>Explore Our Services</h2>
+    <p>Navigate through the options below to access all the important services available at our airport.</p>
+
+    <div class="btn-container">
+        <!-- Інформація про користувача -->
+        <a href="{% url 'user_detail' %}" class="btn">User Profile</a>
+
+        <!-- Перегляд рейсів -->
+        <a href="{% url 'flight_list' %}" class="btn secondary">View Flights</a>
+
+        <!-- Стійки реєстрації -->
+        <a href="{% url 'check_in_counters_list' %}" class="btn">Check-In Counters</a>
+
+        <!-- Гейти -->
+        <a href="{% url 'gates_list' %}" class="btn secondary">View Gates</a>
+
+        {% if user.is_authenticated %}
+            <!-- Вихід -->
+            <a href="{% url 'logout' %}" class="btn logout">Logout</a>
+        {% else %}
+            <!-- Вхід -->
+            <a href="{% url 'login' %}" class="btn secondary">Login</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Карта -->
+<div id="map-container">
+    <div id="map"></div>
+</div>
+
+<script>
+    // Ініціалізація карти з новими координатами
+    const map = L.map('map').setView([49.8125, 23.9561], 13);
+
+    // Додаємо базовий шар
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Додаємо маркер для аеропорту Львова
+    const marker = L.marker([49.8125, 23.9561]).addTo(map)
+        .bindPopup('Welcome to {{ airport_name }}!')
+        .openPopup();
+
+</script>
+
+<footer>
+    <p>© {{ current_year }} {{ airport_name }}.</p>
+</footer>
+
+</body>
+</html>
