@@ -36,6 +36,7 @@ def flight_list(request):
 def add_flight(request):
     if not request.user.is_superuser:
         messages.error(request, "You are not authorized to add flights.")
+        a=1
         return HttpResponseForbidden("You are not authorized to add flights.")
 
     if request.method == 'POST':
