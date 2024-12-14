@@ -176,7 +176,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://fitness-app-good.azurewebsites.net",
+    "https://airport-site.azurewebsites.net",
 ]
 
 CSRF_COOKIE_SECURE = True
